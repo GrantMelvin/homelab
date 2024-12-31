@@ -1,0 +1,7 @@
+api_host: 192.168.4.82
+drive_storage: local
+drive_format: qcow2
+snippets_storage: local
+snippets_path: '/var/lib/vz/snippets/'
+image_storage: local
+linux_bridge: vmbr0

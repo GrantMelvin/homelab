@@ -1,0 +1,86 @@
+# Create VMs
+- name: Create VMs
+  proxmox_kvm:
+    api_user: '{{api_user}}'
+    api_token_id: '{{api_token_id}}'
+    api_token_secret: '{{api_token_secret}}'
+    api_host: '{{api_host}}'
+    node: '{{item.node}}'
+    name: '{{item.name}}'
+    vmid: '{{item.vmid}}'
+    vga: serial0
+    net: '{"net0":"virtio,bridge={{linux_bridge}},firewall=1"}'
+    serial: '{"serial0":"socket"}'
+    scsihw: virtio-scsi-single
+    scsi:
+      # Old prototype version:
+      # scsi0: "local:0/debian-11-generic-amd64-20210814-734.qcow2,format=qcow2,iothread=1"
+
+      # New version:
+      scsi0: '{{drive_storage}}:0/{{item.cloud_init_file}},format={{drive_format}},iothread=1'
+    ide:
+      ide2: '{{drive_storage}}:cloudinit'
+    ostype: 'l26'
+    onboot: 'no'
+    cpu: 'host'
+    cores: '{{item.cores}}'
+    sockets: 1
+    memory: '{{item.memory}}'
+    balloon: 0
+    boot: order=scsi0
+    ipconfig:
+      ipconfig0: 'ip=dhcp'
+    cicustom: 'user={{snippets_storage}}:snippets/{{item.vmid}}-user.yml'
+    agent: 'enabled=1'
+    timeout: 700
+  loop: '{{computers}}'
+  when: 'item.state == "new"'
+
+# Update network settings
+# All VMs will be configured to use DHCP by default
+# If they need a static IP they will be updated
+- name: Update network settings
+  proxmox_kvm:
+    api_user: '{{api_user}}'
+    api_token_id: '{{api_token_id}}'
+    api_token_secret: '{{api_token_secret}}'
+    api_host: '{{api_host}}'
+    node: '{{item.node}}'
+    vmid: '{{item.vmid}}'
+    ipconfig:
+      ipconfig0: 'ip={{item.ipv4_address}},gw={{item.ipv4_gateway}}'
+    timeout: 60
+    update: true
+  loop: '{{computers}}'
+  when: (item.state == "new") and
+        (item.ipv4mode == 'static')
+
+ # Resize the disk
+ # The Cloud-Init disk is only 2GB
+- name: Resize disk
+  community.general.proxmox_disk:
+    api_user: '{{api_user}}'
+    api_token_id: '{{api_token_id}}'
+    api_token_secret: '{{api_token_secret}}'
+    api_host: '{{api_host}}'
+    vmid: '{{item.vmid}}'
+    disk: 'scsi0'
+    size: '32G' # Want this to be dynamic
+    state: 'resized'
+    timeout: 60
+  loop: '{{computers}}'
+  when: 'item.state == "new"'
+  no_log: yes
+
+# Start VMs
+- name: Start VMs
+  proxmox_kvm:
+    api_user: '{{api_user}}'
+    api_token_id: '{{api_token_id}}'
+    api_token_secret: '{{api_token_secret}}'
+    api_host: '{{api_host}}'
+    node: '{{item.node}}'
+    vmid: '{{item.vmid}}'
+    state: 'started'
+  loop: '{{computers}}'
+  when: 'item.state == "new"'

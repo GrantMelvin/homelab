@@ -1,0 +1,9 @@
+  - name: vmtest2
+    vmid: 111
+    node: workstation
+    image_file: debian-12-generic-amd64.qcow2
+    cloud_init_file: debian-12-generic-amd64-20230531-1397.qcow2
+    cores: 2
+    memory: 2048
+    ipv4mode: dhcp
+    state: present
