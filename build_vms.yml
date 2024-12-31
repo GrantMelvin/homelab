@@ -2,7 +2,7 @@
   become: false
   gather_facts: false
   tasks:
-  # Create variables files for images and VMs
+  # Create variables files for images and VMs that are in the group_vars directory
   - name: Create Variable Files
     include_role:
       name: create_variables_file
@@ -15,14 +15,14 @@
   become: true
   gather_facts: false
   roles:
-  # Download cloud-init images
+  # Download cloud-init images onto the pvenode listed in inventory
     - download_cloud_init_images
   # Create cloud-init files
     - create_user_files
 
+# Creates the actual VMs
 - hosts: pvenodes[0]
   become: false
   gather_facts: false
   roles:
-  # Create VMs
     - create_vms

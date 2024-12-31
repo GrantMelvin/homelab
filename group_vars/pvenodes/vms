@@ -20,6 +20,7 @@ computers:
     ipv4mode: dhcp
     state: present
   # Need to fix the vars in pvenodes to accept iso instead of qcow2 for this image
+  # State needs to be new for it to run
   # - name: ubuntu-dev
   #   vmid: 112
   #   node: workstation
