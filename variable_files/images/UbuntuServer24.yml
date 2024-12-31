@@ -1,0 +1,5 @@
+  - name: Ubuntu-Server-24
+    cloud_init_file: ubuntu-24.10-live-server-amd64.iso
+    image_url: 'https://releases.ubuntu.com/24.10/ubuntu-24.10-live-server-amd64.iso'
+    image_checksum: sha256:4fce7c02a5e5dbe3426da4aa0f8b7845e9a36aff29c5884d206a08e51b2c4c47
+    state: present

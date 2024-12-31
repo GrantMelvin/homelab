@@ -19,3 +19,13 @@ computers:
     memory: 2048
     ipv4mode: dhcp
     state: present
+  # Need to fix the vars in pvenodes to accept iso instead of qcow2 for this image
+  # - name: ubuntu-dev
+  #   vmid: 112
+  #   node: workstation
+  #   image_file: ubuntu-24.10-live-server-amd64.iso
+  #   cloud_init_file: ubuntu-24.10-live-server-amd64.iso
+  #   cores: 2
+  #   memory: 2048
+  #   ipv4mode: dhcp
+  #   state: new
